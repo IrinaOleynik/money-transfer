@@ -47,10 +47,12 @@ public class TransferService {
             throw new InvalidCVVException("На счёте недостаточно средств");
         }
 
-        cardFrom.setAmount(cardFrom.getAmount() - request.getAmount().getValue());
-        cardTo.setAmount(cardTo.getAmount() + request.getAmount().getValue());
-        logger.info("Успешная операция c карты отправителя: {},\n на карту получателя: {}",
-                request.getCardFromNumber(), request.getCardToNumber());
+        int sum = request.getAmount().getValue();
+        cardFrom.setAmount(cardFrom.getAmount() - sum);
+        cardTo.setAmount(cardTo.getAmount() + sum);
+        logger.info("Успешная операция c карты отправителя: {},\n на карту получателя: {} \n сумма перевода: {} " +
+                        "\n комиссия: {}",
+                request.getCardFromNumber(), request.getCardToNumber(), sum, sum/100);
     }
 
     public TransferResponse formOperationId(TransferRequest request) {
