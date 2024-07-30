@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  money-transfer:
+    image: money-transfer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5500:5500"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
