@@ -20,8 +20,7 @@ public class TransferController {
 
     @PostMapping("/transfer")
     public TransferResponse transfer(@Valid @RequestBody TransferRequest request) {
-        transferService.transaction(request);
-        TransferResponse response = transferService.formOperationId(request);
+        TransferResponse response = transferService.transaction(request);
         return response;
     }
 

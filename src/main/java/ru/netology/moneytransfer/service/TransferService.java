@@ -25,7 +25,7 @@ public class TransferService {
         this.operationRepository = operationRepository;
     }
 
-    public void transaction(TransferRequest request) {
+    public TransferResponse transaction(TransferRequest request) {
 
         logger.info("Начало операции с карты отправителя: {}, \n на карту получателя: {}",
                 request.getCardFromNumber(), request.getCardToNumber());
@@ -48,14 +48,19 @@ public class TransferService {
         }
 
         int sum = request.getAmount().getValue();
-        cardFrom.setAmount(cardFrom.getAmount() - sum);
-        cardTo.setAmount(cardTo.getAmount() + sum);
+        cardFrom.getLock().lock();
+        cardTo.getLock().lock();
+        try {
+            cardFrom.setAmount(cardFrom.getAmount() - sum);
+            cardTo.setAmount(cardTo.getAmount() + sum);
+        } finally {
+            cardTo.getLock().unlock();
+            cardFrom.getLock().unlock();
+        }
         logger.info("Успешная операция c карты отправителя: {},\n на карту получателя: {} \n сумма перевода: {} " +
                         "\n комиссия: {}",
-                request.getCardFromNumber(), request.getCardToNumber(), sum, sum/100);
-    }
+                request.getCardFromNumber(), request.getCardToNumber(), sum, sum / 100);
 
-    public TransferResponse formOperationId(TransferRequest request) {
         String operationId = UUID.randomUUID().toString();
         operationRepository.save(operationId, request);
         logger.info("ID операции: {}", operationId);
