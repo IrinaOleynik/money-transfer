@@ -60,7 +60,13 @@ class TransferServiceUnitTest {
 
     @Test
     void formOperationId() {
-        TransferResponse response = transferService.formOperationId(request);
+        Card cardFrom = new Card("1234567890123456", "12/24", "123", "RUR", 100);
+        Card cardTo = new Card("9876543210987654", "12/25", "222", "RUR", 100);
+
+        when(cardRepository.findCardByNumber("1234567890123456")).thenReturn(cardFrom);
+        when(cardRepository.findCardByNumber("9876543210987654")).thenReturn(cardTo);
+
+        TransferResponse response = transferService.transaction(request);
 
         assertNotNull(response.getOperationId());
         verify(operationRepository, times(1)).save(anyString(), eq(request));
